@@ -45,11 +45,11 @@ if env_name:
                                  )
         env_name = "takeoff-aviary-v0"
 else:
-	train_env = make_vec_env(HoverAviary,
-				 env_kwargs=sa_env_kwargs,
-				 envs=1,
-				 seed=0)
-	env_name = "hover-aviary-v0"
+        train_env = make_vec_env(HoverAviary,
+                                 env_kwargs=sa_env_kwargs,
+                                 envs=1,
+                                 seed=0)
+        env_name = "hover-aviary-v0"
 
 print("[INFO] Action space:", train_env.action_space)
 print("[INFO] Observation space:", train_env.observation_space)
