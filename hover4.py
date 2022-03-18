@@ -13,7 +13,7 @@ from stable_baselines3.common.monitor import Monitor
 
 from HA import HoverAviary
 
-env = HoverAviary(gui = False, record = False, freq = 10)
+env = HoverAviary(gui = False, record = False, freq = 100)
 
 print("[INFO] Action space:", env.action_space)
 print("[INFO] Observation space:", env.observation_space)
@@ -23,8 +23,7 @@ env = Monitor(env)
 #model = PPO(ACP, env, verbose = 1)
 model = PPO.load("HA_PPOagent_1.zip", env = env)
 
-n_ep = 100000
-n_ep = 10
+n_ep = 100
 model.learn(52*n_ep, eval_freq = 2)
 
 new_save = False
@@ -38,12 +37,12 @@ print(env.get_episode_rewards())
 plt.plot([i for i in range(len(env.get_episode_rewards()))],env.get_episode_rewards())
 plt.show()
 
-env = HoverAviary(gui = True, record = False, freq = 100)
+env = HoverAviary(gui = True, record = False, freq = 50)
 
 obs = env.reset()
 rew = []
 
-for i in range(2):
+for i in range(10):
 	done = False
 	env.reset()
 	tot = 0

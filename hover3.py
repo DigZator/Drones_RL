@@ -10,10 +10,11 @@ from stable_baselines3 import DDPG
 from stable_baselines3.td3 import MlpPolicy as td3ddpgMlpPolicy
 from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.noise import NormalActionNoise, OrnsteinUhlenbeckActionNoise
+from gym_pybullet_drones.utils.Logger import Logger
 
 from HA import HoverAviary
 
-env = HoverAviary(gui = False, record = False, freq = 10)
+env = HoverAviary(gui = False, record = False, freq = 50)
 
 print("[INFO] Action space:", env.action_space)
 print("[INFO] Observation space:", env.observation_space)
@@ -27,8 +28,8 @@ env = Monitor(env)
 #model = DDPG(td3ddpgMlpPolicy, env, action_noise = action_noise, verbose = 1)
 model = DDPG.load("HA_agent_1.zip", action_noise = action_noise, env = env)
 
-n_ep = 1000
-model.learn(52*n_ep, eval_freq = 2)
+n_ep = 100
+model.learn(52*n_ep, eval_freq = 10)
 
 new_save = False
 if new_save:
@@ -46,7 +47,10 @@ env = HoverAviary(gui = True, record = False, freq = 100)
 obs = env.reset()
 rew = []
 
-for i in range(2):
+logger = Logger(logging_freq_hz=int(1),
+                num_drones=1)
+
+for i in range(10):
 	done = False
 	env.reset()
 	tot = 0
@@ -57,6 +61,11 @@ for i in range(2):
 		tot += reward
 		print(step)
 		step += 1
+		logger.log(drone=0,
+                   timestamp=i/env.SIM_FREQ,
+                   state=np.hstack([obs[0:3], np.zeros(4), obs[3:15], np.resize(action, (4))]),
+                   control=np.zeros(12))
 	rew.append(tot)
 print(rew)
+logger.plot()
 env.close()
