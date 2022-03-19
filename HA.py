@@ -87,6 +87,10 @@ class HoverAviary(BaseSingleAgentAviary):
         #print("Hi")
         if ((state[15] < -0.001) or (state[15] > 0.001)):
             reward = reward - 5
+        # if ((state[14] < -0.001) or (state[14] > 0.001)):
+        #     reward = reward - 5
+        # if ((state[13] < -0.001) or (state[13] > 0.001)):
+        #     reward = reward - 5
         return reward
 
     ################################################################################
