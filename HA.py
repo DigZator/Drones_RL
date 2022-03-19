@@ -85,6 +85,8 @@ class HoverAviary(BaseSingleAgentAviary):
         if ((abs(x) < err_radius) and (abs(y) < err_radius) and (abs(z-1) < err_radius)):
             reward += 10
         #print("Hi")
+        if ((state[15] < -0.001) or (state[15] > 0.001)):
+            reward = reward - 5
         return reward
 
     ################################################################################

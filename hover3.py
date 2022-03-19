@@ -14,7 +14,9 @@ from gym_pybullet_drones.utils.Logger import Logger
 
 from HA import HoverAviary
 
-env = HoverAviary(gui = False, record = False, freq = 50)
+freq = 10
+
+env = HoverAviary(gui = False, record = False, freq = freq)
 
 print("[INFO] Action space:", env.action_space)
 print("[INFO] Observation space:", env.observation_space)
@@ -28,21 +30,24 @@ env = Monitor(env)
 #model = DDPG(td3ddpgMlpPolicy, env, action_noise = action_noise, verbose = 1)
 model = DDPG.load("HA_agent_1.zip", action_noise = action_noise, env = env)
 
-n_ep = 100
-model.learn(52*n_ep, eval_freq = 10)
+n_ep = 1000
+ep_len = int(freq*5.2)
 
-new_save = False
-if new_save:
-	model.save("HA_agent_2")
-else:
-	model.save("HA_agent_1")
+for _ in range(3):
+	model.learn(ep_len*n_ep, eval_freq = 10)
 
-print(env.get_episode_rewards())
+	new_save = False
+	if new_save:
+		model.save("HA_agent_2")
+	else:
+		model.save("HA_agent_1")
+
+#print(env.get_episode_rewards())
 
 plt.plot([i for i in range(len(env.get_episode_rewards()))],env.get_episode_rewards())
 plt.show()
 
-env = HoverAviary(gui = True, record = False, freq = 100)
+env = HoverAviary(gui = True, record = False, freq = 50)
 
 obs = env.reset()
 rew = []
@@ -50,7 +55,7 @@ rew = []
 logger = Logger(logging_freq_hz=int(1),
                 num_drones=1)
 
-for i in range(10):
+for i in range(1):
 	done = False
 	env.reset()
 	tot = 0
