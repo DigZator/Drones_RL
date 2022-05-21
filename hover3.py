@@ -4,6 +4,7 @@ import time
 import gym
 import numpy as np
 import matplotlib.pyplot as plt
+import torch as th
 
 from stable_baselines3.common.callbacks import CheckpointCallback, EvalCallback, StopTrainingOnRewardThreshold
 from stable_baselines3 import DDPG
@@ -14,7 +15,7 @@ from gym_pybullet_drones.utils.Logger import Logger
 
 from HA import HoverAviary
 
-freq = 10
+freq = 50
 
 env = HoverAviary(gui = False, record = False, freq = freq)
 
@@ -26,21 +27,23 @@ n_actions = env.action_space.shape[-1]
 action_noise = NormalActionNoise(mean=np.zeros(n_actions), sigma=0.1 * np.ones(n_actions))
 
 env = Monitor(env)
-
-#model = DDPG(td3ddpgMlpPolicy, env, action_noise = action_noise, verbose = 1)
-model = DDPG.load("HA_agent_1.zip", action_noise = action_noise, env = env)
-
+# policy_kwargs = dict(activation_fn=th.nn.ReLU, net_arch=[512,512,256,128])
+# model = DDPG(td3ddpgMlpPolicy, env, action_noise = action_noise, verbose = 1, policy_kwargs=policy_kwargs)
+# model = DDPG.load("HA_agent_1.zip", action_noise = action_noise, env = env)
+# model = DDPG.load("HA_agent_2.zip", action_noise = action_noise, env = env)
+model = DDPG.load("HA_agent_1L.zip", action_noise = action_noise, env = env)
+# model = DDPG.load("HA_agent_2L.zip", action_noise = action_noise, env = env)
 n_ep = 1000
 ep_len = int(freq*5.2)
 
-for _ in range(3):
+for _ in range(1):
 	model.learn(ep_len*n_ep, eval_freq = 10)
 
 	new_save = False
 	if new_save:
-		model.save("HA_agent_2")
+		model.save("HA_agent_2L")
 	else:
-		model.save("HA_agent_1")
+		model.save("HA_agent_1L")
 
 #print(env.get_episode_rewards())
 
@@ -55,7 +58,7 @@ rew = []
 logger = Logger(logging_freq_hz=int(1),
                 num_drones=1)
 
-for i in range(1):
+for i in range(5):
 	done = False
 	env.reset()
 	tot = 0

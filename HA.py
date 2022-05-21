@@ -73,24 +73,45 @@ class HoverAviary(BaseSingleAgentAviary):
 
         """
         state = self._getDroneStateVector(0)
+        # self.pos = np.zeros((self.NUM_DRONES, 3))
+        # self.quat = np.zeros((self.NUM_DRONES, 4))
+        # self.rpy = np.zeros((self.NUM_DRONES, 3))
+        # self.vel = np.zeros((self.NUM_DRONES, 3))
+        # self.ang_v = np.zeros((self.NUM_DRONES, 3))
+        # state = np.hstack([self.pos[nth_drone, :], self.quat[nth_drone, :], self.rpy[nth_drone, :],
+        #                    self.vel[nth_drone, :], self.ang_v[nth_drone, :], self.last_clipped_action[nth_drone, :]])
         reward = 0
         x = state[0]
         y = state[1]
         z = state[2]
-        radius = 3
+        # radius1 = 0.95
+        # radius2 = 0.02
         reward = -1 * np.linalg.norm(np.array([0, 0, 1])-state[0:3])**2
-        if ((abs(x) > radius) and (abs(y) > radius) and (abs(z-1) > radius)):
-            reward = reward - 10000
-        err_radius = 0.5
-        if ((abs(x) < err_radius) and (abs(y) < err_radius) and (abs(z-1) < err_radius)):
-            reward += 10
-        #print("Hi")
-        if ((state[15] < -0.001) or (state[15] > 0.001)):
+        # if ((abs(x) > radius2)):
+        #     reward = reward - (abs(x)*100)
+        # if ((abs(y) > radius2)):
+        #     reward = reward - (abs(y)*100)
+        # if ((abs(1-z) > radius1)):
+        #     reward = reward - 100
+        # err_radius = 0.1
+        # if ((abs(z-1) < err_radius)):
+        #     reward += 10
+        # #print("Hi")
+        if ((state[15] < -0.01) or (state[15] > 0.01)):
             reward = reward - 5
-        # if ((state[14] < -0.001) or (state[14] > 0.001)):
-        #     reward = reward - 5
-        # if ((state[13] < -0.001) or (state[13] > 0.001)):
-        #     reward = reward - 5
+        if ((state[14] < -0.01) or (state[14] > 0.01)):
+            reward = reward - 5
+        if ((state[13] < -0.01) or (state[13] > 0.01)):
+            reward = reward - 5
+        if (abs(state[7]) > 0.5):
+            reward = reward - 5
+        if (abs(state[8]) > 0.5):
+            reward = reward - 5
+        if (abs(state[9]) > 0.5):
+            reward = reward - 5
+        # reward = -((0.1/(abs(x**2+y**2+0.1))) + 1)
+        # reward = reward - abs(z-1)
+
         return reward
 
     ################################################################################
