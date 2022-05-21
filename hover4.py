@@ -14,6 +14,17 @@ from gym_pybullet_drones.utils.Logger import Logger
 
 from HA import HoverAviary
 
+import os
+
+model_dir = "models/PPO"
+logdir = "logs"
+
+if not os.path.exists(model_dir):
+	os.makedirs(model_dir)
+
+if not os.path.exists(logdir):
+	os.makedirs(logdir)
+
 env = HoverAviary(gui = False, record = False, freq = 100)
 
 print("[INFO] Action space:", env.action_space)
@@ -22,17 +33,18 @@ print("[INFO] Observation space:", env.observation_space)
 env = Monitor(env)
 
 policy_kwargs = dict(net_arch=[512,512,256,128])
-model = PPO(ACP, env, verbose = 1, policy_kwargs = policy_kwargs)
+model = PPO(ACP, env, verbose = 1, policy_kwargs = policy_kwargs, tensorboard_log = logdir)
 #model = PPO(ACP, env, verbose = 1)
 #model = PPO.load("HA_PPOagent_1L.zip", env = env)
 #model = PPO.load("HA_PPOagent_3L.zip", env = env)
 #model = PPO.load("HA_PPOagent_4L.zip", env = env)
 #model = PPO.load("ppo_hover_2503_01.zip", env = env)
 
-n_ep = 1000
+n_ep = 100000
 
-model.learn(3e6, eval_freq = 100)
-model.save("HA_PPOagent_2105_1")
+for i in range(1, 31):
+	model.learn(n_ep, eval_freq = 100, reset_num_timesteps = False, tb_log_name = "PPO")
+	model.save(model_dir + f"/HA_PPOagent_2105_2_{i}_30")
 
 print(env.get_episode_rewards())
 
